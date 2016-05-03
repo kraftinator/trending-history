@@ -19,13 +19,14 @@ class BotBrain
     results = []
     articles = []
     items.each do |item|
+      next unless item['language'] == "English"
       text = item['ocr_eng']
       next unless text
       phrase = text =~ /#{search_str}/i
       results << text[phrase-100..phrase+100] if phrase
-      parsed_phrase = text[phrase-100..phrase+100] if phrase
+      parsed_phrase = text[phrase-200..phrase+200] if phrase
       next unless parsed_phrase
-      articles << Article.new( { trend: trend, text: parsed_phrase, publication: item['title'], date: item['date'] } )
+      articles << Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'] } )
     end
     
     return articles
