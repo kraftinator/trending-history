@@ -19,14 +19,14 @@ class BotBrain
     results = []
     articles = []
     items.each do |item|
-      next unless item['language'] == "English"
+      #next unless item['language'] == "English"
       text = item['ocr_eng']
       next unless text
       phrase = text =~ /#{search_str}/i
       results << text[phrase-100..phrase+100] if phrase
       parsed_phrase = text[phrase-200..phrase+200] if phrase
       next unless parsed_phrase
-      articles << Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'] } )
+      articles << Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'], url: item['url'] } )
     end
     
     return articles
@@ -35,6 +35,25 @@ class BotBrain
     #else
     #  return nil, false
     #end
+  end
+  
+  def items( trend )
+    puts trend
+    words = extract_words( trend )
+    puts words
+    return false if words.empty?
+    response = HTTParty.get("http://chroniclingamerica.loc.gov/search/pages/results/?&andtext=&phrasetext=#{words.join('+')}&format=json")
+    return false if response['items'].nil?  
+    items = response['items']
+    search_str = words.join(' ')
+    results = []
+    items.each do |item|
+      text = item['ocr_eng']
+      next unless text
+      next unless text =~ /#{search_str}/i
+      results << item
+    end
+    results
   end
   
   def extract_words( name )
