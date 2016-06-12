@@ -1,6 +1,7 @@
 class Article
 
   MAX_CHARS = 140
+  MAX_COMMENT_CHARS = 117
 
   attr_accessor :trend
   attr_accessor :trend_words
@@ -27,6 +28,11 @@ class Article
     puts "--------------------"
   end
   
+  def can_tweet?
+    result, output = tweet
+    result
+  end
+ 
   def tweet
     output = nil
     sentences = @text.split( ".\n" )
@@ -38,13 +44,59 @@ class Article
     end
     output.gsub!("\n"," ")
     output = "#{Date.parse(@date).strftime("%b %-d, %Y")}: #{output}"
-    if output.size > MAX_CHARS
-      output = output[0..139]
-      output[137] = "."
-      output[138] = "."
-      output[139] = "."
+    #if output.size > MAX_CHARS
+    #  output = output[0..MAX_CHARS-1]
+    #  output[MAX_CHARS-3] = "."
+    #  output[MAX_CHARS-2] = "."
+    #  output[MAX_CHARS-1] = "."
+    #end
+    
+    #hashtag = @trend_words.gsub( ' ', '' )
+    
+    ## Get hashtag
+    if @trend[0] == '#'
+      hashtag = @trend
+    else
+      words = @trend_words.split( ' ' )
+      words.each { |w| w.capitalize! }
+      hashtag = "##{words.join}"
     end
-    output
+    
+    #p hashtag
+    output.gsub!( /#{@trend_words}/i, hashtag )
+    #p output
+    
+    if output.size > MAX_COMMENT_CHARS
+      output = output[0..MAX_COMMENT_CHARS-2]
+      
+      output[MAX_COMMENT_CHARS-4] = "."
+      output[MAX_COMMENT_CHARS-3] = "."
+      output[MAX_COMMENT_CHARS-2] = "."
+      
+    end
+    
+    ## Check for search string
+    #return output, false unless output =~ /#{@trend_words}/i
+    return false, output unless output =~ /#{hashtag}/i
+    
+    #url = @url.gsub( "json", "pdf" )
+    
+    words = @trend_words.split( ' ' )
+    search_words = []
+    words.each do |word|
+      search_words << word
+      search_words << word.downcase
+      search_words << word.upcase
+      search_words << word.capitalize
+    end
+    search_words.uniq!
+    
+    #url = @url.gsub( ".json", "/#words=#{@trend_words.gsub( ' ', '+' )}" )
+    url = @url.gsub( ".json", "/#words=#{search_words.join('+')}" )
+    
+    output = "#{output} #{url}"
+    
+    return true, output
   end
   
 end

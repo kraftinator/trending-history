@@ -1,4 +1,8 @@
 require 'httparty'
+require 'active_support'
+require 'active_support/core_ext'
+
+require_relative 'article'
 
 class BotBrain
 
@@ -8,9 +12,9 @@ class BotBrain
   end
   
   def process( trend )
-    puts trend
+    #puts trend
     words = extract_words( trend )
-    puts words
+    #puts words
     return false if words.empty?
     response = HTTParty.get("http://chroniclingamerica.loc.gov/search/pages/results/?&andtext=&phrasetext=#{words.join('+')}&format=json")
     return false if response['items'].nil?  
@@ -26,7 +30,11 @@ class BotBrain
       results << text[phrase-100..phrase+100] if phrase
       parsed_phrase = text[phrase-200..phrase+200] if phrase
       next unless parsed_phrase
-      articles << Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'], url: item['url'] } )
+      next unless parsed_phrase =~ /#{search_str}/i
+      article = Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'], url: item['url'] } )
+      next unless article.can_tweet?
+      articles << article
+      #articles << Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'], url: item['url'] } )
     end
     
     return articles
