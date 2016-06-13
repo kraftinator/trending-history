@@ -65,6 +65,7 @@ class BotBrain
   end
   
   def extract_words( name )
+     name = I18n.transliterate(name)
      results = []
      ## Handle hashtags
      if name[0] == '#'
