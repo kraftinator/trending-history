@@ -101,7 +101,7 @@ class Article
   end
   
   def gibberish?( text )
-    if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or text =~ /\*/ or text =~ /\W\W\w\w\W\W/i
+    if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or text =~ /\*/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i
       return true
     else
       return false
