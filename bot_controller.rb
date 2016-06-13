@@ -56,7 +56,8 @@ class BotController
       ## Get user timeline
       tweets = @client.user_timeline
       tweets.each do |tweet|
-        if tweet.text.match( trend.name )
+        if tweet.text.downcase.match( trend.name.gsub(' ','').downcase )
+        #if tweet.text.downcase.match( trend.name.downcase )
           valid_trend = nil
           break
         end
