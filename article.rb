@@ -78,6 +78,7 @@ class Article
     ## Check for search string
     #return output, false unless output =~ /#{@trend_words}/i
     return false, output unless output =~ /#{hashtag}/i
+    return false, output if gibberish?( output )
     
     #url = @url.gsub( "json", "pdf" )
     
@@ -97,6 +98,14 @@ class Article
     output = "#{output} #{url}"
     
     return true, output
+  end
+  
+  def gibberish?( text )
+    if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or text =~ /\*/ or text =~ /\W\W\w\w\W\W/i
+      return true
+    else
+      return false
+    end
   end
   
 end
