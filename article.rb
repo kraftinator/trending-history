@@ -111,18 +111,27 @@ class Article
   def gibberish?( text )
     
     if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or 
-       text =~ /\*|\^|\\/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i or text =~ /\:\w/i or !(text =~ / #/i)
+       text =~ /\*|\^|\\/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i or text =~ /\:\w/i or !(text =~ / #/i) or
+       #text =~ /. ,/ or
+       text =~ / [a-z][A-Z] /
       return true
     end
 
     ############################
     words = text.split(' ')
-    count = 0
+    #count = 0
     words.each do |word|
       next if word.size < 3
       next if word[0] == '#'
       return true if word =~ /[A-Z]\S*[a-z]\S*[A-Z]/ or word =~ /[a-z]\S*[A-Z]\S*[a-z]/
-      count += 1 if word.gibberish?
+      
+      if word == word.downcase
+        if word =~ /[a-z]{3,}/
+          return true unless word =~ /a|e|i|o|u|y/
+        end
+      end
+      
+      #count += 1 if word.gibberish?
     end
     #return true if count > 1
     ############################
