@@ -70,9 +70,14 @@ class Article
       hashtag.gsub!( "'", "" )
     end
     
+    
+    
     #p hashtag
     output.gsub!( /#{@trend_words}/i, hashtag )
     #p output
+    
+    ## Reject if hashtag is in all caps
+    return false, output if hashtag == hashtag.upcase
     
     if output.size > MAX_COMMENT_CHARS
       output = output[0..MAX_COMMENT_CHARS-2]
