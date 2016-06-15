@@ -42,8 +42,13 @@ class Article
         break
       end
     end
+    
+    ## special output processing
+    
+    
     output.gsub!("\n"," ")
     output = "#{Date.parse(@date).strftime("%b %-d, %Y")}: #{output}"
+    
     #if output.size > MAX_CHARS
     #  output = output[0..MAX_CHARS-1]
     #  output[MAX_CHARS-3] = "."
@@ -78,7 +83,7 @@ class Article
     ## Check for search string
     #return output, false unless output =~ /#{@trend_words}/i
     return false, output unless output =~ /#{hashtag}/i
-    return false, output if gibberish?( output )
+    return false, output if gibberish?( output ) or false_start?( output )
     
     #url = @url.gsub( "json", "pdf" )
     
@@ -101,7 +106,20 @@ class Article
   end
   
   def gibberish?( text )
-    if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or text =~ /\*/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i
+    if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or 
+       text =~ /\*|\^/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i or text =~ /\:\w/i #or
+       #text =~ /\W\w\w\W\w/i
+      return true
+    else
+      return false
+    end
+  end
+  
+  def false_start?( text )
+    sections = text.split( ':')
+    s = sections[1][1]
+    return false if s == '#'
+    if s =~ /\W/i or s =~ /[a-z]|\d/
       return true
     else
       return false
