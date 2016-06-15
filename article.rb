@@ -1,3 +1,5 @@
+require 'gibberish_detector'
+
 class Article
 
   MAX_CHARS = 140
@@ -43,7 +45,7 @@ class Article
       end
     end
     
-    ## special output processing
+
     
     
     output.gsub!("\n"," ")
@@ -108,15 +110,25 @@ class Article
   
   def gibberish?( text )
     
-
-    
     if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or 
        text =~ /\*|\^|\\/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i or text =~ /\:\w/i or !(text =~ / #/i)
-
       return true
-    else
-      return false
     end
+
+    ############################
+    words = text.split(' ')
+    count = 0
+    words.each do |word|
+      next if word.size < 3
+      next if word[0] == '#'
+      return true if word =~ /[A-Z]\S*[a-z]\S*[A-Z]/ or word =~ /[a-z]\S*[A-Z]\S*[a-z]/
+      count += 1 if word.gibberish?
+    end
+    #return true if count > 1
+    ############################
+
+    return false
+
   end
   
   def false_start?( text )
