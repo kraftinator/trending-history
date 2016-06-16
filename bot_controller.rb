@@ -53,17 +53,16 @@ class BotController
       ## Ignore promoted content
       next if trend.promoted_content?
       valid_trend = trend
+      puts trend.name
       ## Get user timeline
       tweets = @client.user_timeline
       tweets.each do |tweet|
         if tweet.text.downcase.match( trend.name.gsub(' ','').downcase )
-        #if tweet.text.downcase.match( trend.name.downcase )
           valid_trend = nil
           break
         end
       end
       results = bot.process( valid_trend.name ) if valid_trend
-      break if results.nil?
       break if results.any?
     end
     if results.any?

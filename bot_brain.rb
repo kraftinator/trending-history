@@ -14,7 +14,8 @@ class BotBrain
   def process( trend )
     
     words = extract_words( trend )
-    return false if words.empty?
+    #return false if words.empty?
+    return Array.new if words.empty?
     
     items = []
     (1..2).each do |page|
@@ -24,7 +25,8 @@ class BotBrain
       items.flatten!
       break if items.size < 20
     end
-    return false if items.empty?
+    #return false if items.empty?
+    return Array.new if items.empty?
         
     search_str = words.join(' ')
     results = []
