@@ -63,6 +63,7 @@ class BotController
         end
       end
       results = bot.process( valid_trend.name ) if valid_trend
+      break if results.nil?
       break if results.any?
     end
     if results.any?

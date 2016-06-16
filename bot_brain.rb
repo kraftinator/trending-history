@@ -12,13 +12,20 @@ class BotBrain
   end
   
   def process( trend )
-    #puts trend
+    
     words = extract_words( trend )
-    #puts words
     return false if words.empty?
-    response = HTTParty.get("http://chroniclingamerica.loc.gov/search/pages/results/?&andtext=&phrasetext=#{words.join('+')}&format=json")
-    return false if response['items'].nil?  
-    items = response['items']
+    
+    items = []
+    (1..2).each do |page|
+      response = HTTParty.get("http://chroniclingamerica.loc.gov/search/pages/results/?&andtext=&phrasetext=#{words.join('+')}&format=json&page=#{page}")
+      break if response['items'].nil? 
+      items << response['items']
+      items.flatten!
+      break if items.size < 20
+    end
+    return false if items.empty?
+        
     search_str = words.join(' ')
     results = []
     articles = []
@@ -34,34 +41,11 @@ class BotBrain
       article = Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'], url: item['url'] } )
       next unless article.can_tweet?
       articles << article
-      #articles << Article.new( { trend: trend, trend_words: search_str, text: parsed_phrase, publication: item['title'], date: item['date'], url: item['url'] } )
+
     end
     
     return articles
-    #if results.any?
-    #  return results, true
-    #else
-    #  return nil, false
-    #end
-  end
-  
-  def items( trend )
-    puts trend
-    words = extract_words( trend )
-    puts words
-    return false if words.empty?
-    response = HTTParty.get("http://chroniclingamerica.loc.gov/search/pages/results/?&andtext=&phrasetext=#{words.join('+')}&format=json")
-    return false if response['items'].nil?  
-    items = response['items']
-    search_str = words.join(' ')
-    results = []
-    items.each do |item|
-      text = item['ocr_eng']
-      next unless text
-      next unless text =~ /#{search_str}/i
-      results << item
-    end
-    results
+
   end
   
   def extract_words( name )

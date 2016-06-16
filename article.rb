@@ -36,6 +36,7 @@ class Article
   end
  
   def tweet
+    
     output = nil
     sentences = @text.split( ".\n" )
     sentences.each do |sentence|
@@ -45,20 +46,9 @@ class Article
       end
     end
     
-
-    
-    
     output.gsub!("\n"," ")
-    output = "#{Date.parse(@date).strftime("%b %-d, %Y")}: #{output}"
-    
-    #if output.size > MAX_CHARS
-    #  output = output[0..MAX_CHARS-1]
-    #  output[MAX_CHARS-3] = "."
-    #  output[MAX_CHARS-2] = "."
-    #  output[MAX_CHARS-1] = "."
-    #end
-    
-    #hashtag = @trend_words.gsub( ' ', '' )
+    #output = "#{Date.parse(@date).strftime("%b %-d, %Y")}: #{output}"
+    output = "#{Date.parse(@date).strftime("%Y")}: #{output}"
     
     ## Get hashtag
     if @trend[0] == '#'
@@ -69,12 +59,8 @@ class Article
       hashtag = "##{words.join}"
       hashtag.gsub!( "'", "" )
     end
-    
-    
-    
-    #p hashtag
+
     output.gsub!( /#{@trend_words}/i, hashtag )
-    #p output
     
     ## Reject if hashtag is in all caps
     return false, output if hashtag == hashtag.upcase
@@ -89,8 +75,11 @@ class Article
     end
     
     ## Check for search string
-    #return output, false unless output =~ /#{@trend_words}/i
-    return false, output unless output =~ /#{hashtag}/i
+    #
+    #return false, output unless output =~ /#{hashtag}/i
+    #return false, output unless output =~ / #{hashtag} /i
+    return false, output unless output =~ / #{hashtag}( |'|\z)/i
+     #HermanCain( |')
     return false, output if gibberish?( output ) or false_start?( output )
     
     #url = @url.gsub( "json", "pdf" )
@@ -117,7 +106,7 @@ class Article
     
     if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or 
        text =~ /\*|\^|\\/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i or text =~ /\:\w/i or !(text =~ / #/i) or
-       #text =~ /. ,/ or
+       text =~ /\w,\w/ or
        text =~ / [a-z][A-Z] /
       return true
     end
