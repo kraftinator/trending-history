@@ -107,7 +107,8 @@ class Article
     if text =~ /\s.\s. /i or text =~ /\W{6}/i or text =~ /\w\?\w/i or text =~ /\W\W\w\W\W/i or 
        text =~ /\*|\^|\\/ or text =~ /\W\W\w\w\W\W/i or text =~ /\w#\w/i or text =~ /\:\w/i or !(text =~ / #/i) or
        text =~ /\w,\w/ or
-       text =~ / [a-z][A-Z] /
+       text =~ / [a-z][A-Z] / or
+       text =~ /:!/
       return true
     end
 

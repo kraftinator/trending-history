@@ -18,7 +18,7 @@ class BotBrain
     return Array.new if words.empty?
     
     items = []
-    (1..2).each do |page|
+    (1..3).each do |page|
       response = HTTParty.get("http://chroniclingamerica.loc.gov/search/pages/results/?&andtext=&phrasetext=#{words.join('+')}&format=json&page=#{page}")
       break if response['items'].nil? 
       items << response['items']
