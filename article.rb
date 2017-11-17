@@ -2,8 +2,8 @@ require 'gibberish_detector'
 
 class Article
 
-  MAX_CHARS = 140
-  MAX_COMMENT_CHARS = 117
+  MAX_CHARS = 280
+  MAX_COMMENT_CHARS = 257
 
   attr_accessor :trend
   attr_accessor :trend_words
@@ -36,6 +36,10 @@ class Article
   end
  
   def tweet
+    
+    #puts "@trend = #{@trend}"
+    #puts "@trend_words = #{@trend_words}"
+    #puts "@text = #{@text}"
     
     output = nil
     sentences = @text.split( ".\n" )
@@ -96,6 +100,10 @@ class Article
     
     #url = @url.gsub( ".json", "/#words=#{@trend_words.gsub( ' ', '+' )}" )
     url = @url.gsub( ".json", "/#words=#{search_words.join('+')}" )
+    
+    #####
+    output.gsub!( /#{hashtag}/, @trend ) 
+    #####
     
     output = "#{output} #{url}"
     
